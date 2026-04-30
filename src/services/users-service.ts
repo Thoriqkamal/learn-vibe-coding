@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { users } from "../db/schema";
+import { users, sessions } from "../db/schema";
 import { eq } from "drizzle-orm";
 
 export const registerUser = async (data: { name: string; email: string; password: string }) => {
@@ -39,4 +39,40 @@ export const registerUser = async (data: { name: string; email: string; password
   const { password: _, ...userWithoutPassword } = newUser;
   
   return userWithoutPassword;
+};
+
+export const loginUser = async (data: { email: string; password: string }) => {
+  const { email, password } = data;
+
+  const user = await db.query.users.findFirst({
+    where: eq(users.email, email),
+  });
+
+  if (!user) {
+    const error = new Error("Email or password is wrong");
+    (error as any).code = "EMAIL_OR_PASSWORD_WRONG";
+    throw error;
+  }
+
+  const isPasswordValid = await Bun.password.verify(password, user.password);
+
+  if (!isPasswordValid) {
+    const error = new Error("Email or password is wrong");
+    (error as any).code = "EMAIL_OR_PASSWORD_WRONG";
+    throw error;
+  }
+
+  const token = crypto.randomUUID();
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 30); // 30 days
+
+  await db.insert(sessions).values({
+    token,
+    userId: user.id,
+  });
+
+  return {
+    token,
+    expires_at: expiresAt.toISOString(),
+  };
 };
