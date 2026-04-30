@@ -1,0 +1,46 @@
+buatkan issue.md yang berisi perencanaan untuk nanti di implementasikan oleh junior programmer atau ai modek yang lebih murah.
+
+Isi dari planning nya adalah sebagai berikut :
+
+1. buat tabel users:
+id integer auto increment
+name varchar 255 not null
+email varchar 255 not null
+password varchar 255 not null
+created_at timestamp default current_timestamp
+
+2. buatkan API untuk registrasi user baru
+
+3. Endpoint : Post /api/users
+Request body : 
+{
+    "name": "John Doe",
+    "email": "[EMAIL_ADDRESS]",
+    "password": "[PASSWORD]"
+}
+
+Response body dari endpoint /api/users : 
+{
+    "id": 1,
+    "name": "John Doe",
+    "email": "[EMAIL_ADDRESS]",
+    "created_at": "2026-04-30T11:16:06+07:00"
+}
+
+Response body error:
+{
+    "message": "Email already exists",
+    "code": "EMAIL_ALREADY_EXISTS"
+}
+
+Struktur folder di dalam src
+- routes : ini berisi routing elysia js
+- services : ini berisi logic bisnis aplikasi
+
+Struktur file
+- routes : menggunakan format misal users-route.ts
+- services : menggunakan format misal users-service.ts
+
+Jelaskan tahapan-tahapan yang harus dilakukan untuk mengimplementasikan fitur ini, anggap nanti yang mengimplementasikan adalah junior programmer atau ai model yang lebih murah.
+
+Dan juga jelaskan error handling yang harus dilakukan.
