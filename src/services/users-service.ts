@@ -76,3 +76,30 @@ export const loginUser = async (data: { email: string; password: string }) => {
     expires_at: expiresAt.toISOString(),
   };
 };
+
+export const getCurrentUser = async (token: string) => {
+  const session = await db.query.sessions.findFirst({
+    where: eq(sessions.token, token),
+  });
+
+  if (!session) {
+    const error = new Error("Unauthorized");
+    (error as any).code = "UNAUTHORIZED";
+    throw error;
+  }
+
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, session.userId),
+  });
+
+  if (!user) {
+    const error = new Error("Unauthorized");
+    (error as any).code = "UNAUTHORIZED";
+    throw error;
+  }
+
+  // Remove password from the response
+  const { password: _, ...userWithoutPassword } = user;
+  
+  return userWithoutPassword;
+};
