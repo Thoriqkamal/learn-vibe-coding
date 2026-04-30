@@ -2,35 +2,24 @@ buatkan issue.md yang berisi perencanaan untuk nanti di implementasikan oleh jun
 
 Isi dari planning nya adalah sebagai berikut :
 
-1. buat tabel users:
-id integer auto increment
-name varchar 255 not null
-email varchar 255 not null
-password varchar 255 not null
-created_at timestamp default current_timestamp
+1. buatkan API untuk get user saat ini yang sedang login
 
-2. buatkan API untuk registrasi user baru
+2. Endpoint : Get /api/user
+Request headers : 
+- Authorization: Bearer <token> (token adalah token yang ada di table users)
 
-3. Endpoint : Post /api/users
-Request body : 
-{
-    "name": "John Doe",
-    "email": "[EMAIL_ADDRESS]",
-    "password": "[PASSWORD]"
-}
-
-Response body dari endpoint /api/users : 
+Response body [success]: 
 {
     "id": 1,
-    "name": "John Doe",
     "email": "[EMAIL_ADDRESS]",
-    "created_at": "2026-04-30T11:16:06+07:00"
+    "name": "John Doe",
+    "created_at": "timpestamp"
 }
 
-Response body error:
+Response body [error]:
 {
-    "message": "Email already exists",
-    "code": "EMAIL_ALREADY_EXISTS"
+    "error": "Unauthorized",
+    "code": "UNAUTHORIZED"
 }
 
 Struktur folder di dalam src
