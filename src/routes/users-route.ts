@@ -16,7 +16,7 @@ export const usersRoutes = new Elysia()
         }
 
         const token = authHeader.split(" ")[1];
-        const user = await getCurrentUser(token);
+        const user = await getCurrentUser(token || '');
         return user;
       } catch (error: any) {
         if (error.code === "UNAUTHORIZED") {
