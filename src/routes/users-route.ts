@@ -2,70 +2,36 @@ import { Elysia, t } from "elysia";
 import { registerUser, loginUser, getCurrentUser, logoutUser } from "../services/users-service";
 
 export const usersRoutes = new Elysia()
-  .get(
-    "/user",
-    async ({ headers, set }) => {
-      try {
-        const authHeader = headers.authorization;
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
-          set.status = 401;
-          return {
-            error: "Unauthorized",
-            code: "UNAUTHORIZED",
-          };
-        }
-
-        const token = authHeader.split(" ")[1];
-        const user = await getCurrentUser(token || '');
-        return user;
-      } catch (error: any) {
-        if (error.code === "UNAUTHORIZED") {
-          set.status = 401;
-          return {
-            error: "Unauthorized",
-            code: "UNAUTHORIZED",
-          };
-        }
-
-        set.status = 500;
-        return {
-          message: error.message || "Internal Server Error",
-        };
-      }
+  .onError(({ error, set }) => {
+    if ((error as any).code === "UNAUTHORIZED") {
+      set.status = 401;
+      return {
+        message: "Unauthorized",
+        code: "UNAUTHORIZED",
+      };
     }
-  )
-  .post(
-    "/logout",
-    async ({ headers, set }) => {
-      try {
-        const authHeader = headers.authorization;
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
-          set.status = 401;
-          return {
-            message: "Unauthorized",
-            code: "UNAUTHORIZED",
-          };
-        }
-
-        const token = authHeader.split(" ")[1];
-        const result = await logoutUser(token);
-        return result;
-      } catch (error: any) {
-        if (error.code === "UNAUTHORIZED") {
-          set.status = 401;
-          return {
-            message: "Unauthorized",
-            code: "UNAUTHORIZED",
-          };
-        }
-
-        set.status = 500;
-        return {
-          message: error.message || "Internal Server Error",
-        };
+  })
+  .derive(({ headers }) => ({
+    getAuthToken: () => {
+      const authHeader = headers.authorization;
+      if (!authHeader || !authHeader.toLowerCase().startsWith("bearer ")) {
+        const error = new Error("Unauthorized");
+        (error as any).code = "UNAUTHORIZED";
+        throw error;
       }
-    }
-  )
+      return authHeader.substring(7).trim();
+    },
+  }))
+  .get("/user", async ({ getAuthToken }) => {
+    const token = getAuthToken();
+    const user = await getCurrentUser(token);
+    return user;
+  })
+  .post("/logout", async ({ getAuthToken }) => {
+    const token = getAuthToken();
+    const result = await logoutUser(token);
+    return result;
+  })
   .post(
     "/login",
     async ({ body, set }) => {
