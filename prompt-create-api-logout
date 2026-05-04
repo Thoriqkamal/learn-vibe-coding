@@ -1,0 +1,33 @@
+buatkan issue.md yang berisi perencanaan untuk nanti di implementasikan oleh junior programmer atau ai model yang lebih murah.
+
+Isi dari planning nya adalah sebagai berikut :
+
+1. buatkan API untuk logout user
+
+2. Endpoint : Post /api/logout
+
+Headers :
+- Authorization: Bearer <token> (token adalah token yang ada di table users)
+
+Response body [success]: 
+{
+    "message": "Logout success"
+}
+
+Jika sukses logout, maka data session dengan token tersebut harus di hapus dari database.
+
+Response body [error]:
+{
+    "message": "Unauthorized",
+    "code": "UNAUTHORIZED"
+}
+
+Struktur folder di dalam src
+- routes : ini berisi routing elysia js
+- services : ini berisi logic bisnis aplikasi
+
+Struktur file
+- routes : menggunakan format misal users-route.ts
+- services : menggunakan format misal users-service.ts
+
+Jelaskan tahapan-tahapan yang harus dilakukan untuk mengimplementasikan fitur ini, anggap nanti yang mengimplementasikan adalah junior programmer atau AI model yang lebih murah.
